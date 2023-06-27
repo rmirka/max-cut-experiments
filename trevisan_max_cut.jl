@@ -1,4 +1,4 @@
-import Pkg
+ import Pkg
 Pkg.add("Combinatorics")
 using Combinatorics
 using LinearAlgebra
@@ -47,7 +47,7 @@ function trevisan_max_cut(adj_matrix, adj_list, active_verts, n, numt)
     A = adj_matrix
     neg_sqrt_D = zeros(n,n)
     [neg_sqrt_D[i,i] = D[i,i]==0 ? 0 : D[i,i]^(-1/2) for i ∈ 1:n]
-    x = real.(smallest_eigenvector(neg_sqrt_D * A * neg_sqrt_D)) # sometimes theres a 0.0im part for whatever reason
+    x = real.(smallest_eigenvector(neg_sqrt_D * A * neg_sqrt_D)) # sometimes theres a 0.0im part
     max_x = maximum(abs.(x))
 
     for i ∈ 1:n
@@ -100,26 +100,26 @@ function trevisan_max_cut(adj_matrix, adj_list, active_verts, n, numt)
 
     if (C + X/2 <= M/2)
         greedy_sol = greedy_max_cut(adj_matrix, active_verts, adj_list, n)
-        A = greedy_sol[2]
-        return (greedy_sol[1],Int.(A))
+        cut = greedy_sol[1]
+        return (greedy_sol[2],cut)
     else
         L = filter(i -> y[i] == -1 && i ∈ active_verts, 1:n)
         R = filter(i -> y[i] == 1 && i ∈ active_verts, 1:n)
         V_prime = filter(i -> y[i] == 0 && i ∈ active_verts, 1:n)
 
         if !isempty(V_prime)
-            (cut_val, A) = trevisan_max_cut(induced_subgraph(adj_matrix,V_prime),adj_list, V_prime, n, numt)
+            (cut, cut_val) = trevisan_max_cut(induced_subgraph(adj_matrix,V_prime),adj_list, V_prime, n, numt)
         else
-            A = []
+            cut = []
         end
 
-        cut_val_1 = cut_value(adj_matrix, union(A,L), adj_list)
-        cut_val_2 = cut_value(adj_matrix, union(A,R), adj_list)
+        cut_val_1 = cut_value(adj_matrix, union(cut,L), adj_list)
+        cut_val_2 = cut_value(adj_matrix, union(cut,R), adj_list)
 
         if cut_val_1 > cut_val_2
-            return (cut_val_1, union(A,L))
+            return union(cut,L), cut_val_1
         else
-            return (cut_val_2, union(A,R))
+            return union(cut,R), cut_val_2
         end
     end
 end
