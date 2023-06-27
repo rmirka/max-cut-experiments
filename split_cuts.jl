@@ -20,7 +20,7 @@ function split_cuts(A, n,adj_list)
     max_val = 0
     max_cut = []
     for j = 1:n-1
-        val = cut_value(A, p[1:j], adj_list)
+        cut, val = local_search(A, adj_list, p[1:j], n, cut_value(A, p[1:j], adj_list))
         if val > max_val
             max_val = val
             max_cut = p[1:j]
