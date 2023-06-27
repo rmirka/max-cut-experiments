@@ -19,7 +19,7 @@ function greedy_max_cut(adj_matrix, active_verts, adj_list, n)
     B = []
     value = 0
     for vertex in active_verts
-        
+
         relevant_row = adj_matrix[vertex, :]
         A_neighbors_weight = sum([relevant_row[i] for i ∈ filter(i -> relevant_row[i] != 0 && i in A, adj_list[vertex])])
         B_neighbors_weight = sum([relevant_row[i] for i ∈ filter(i -> relevant_row[i] != 0 && i in B, adj_list[vertex])])
@@ -33,6 +33,6 @@ function greedy_max_cut(adj_matrix, active_verts, adj_list, n)
         end
 
     end
-
-    return (value, A)
-end
+    cut, cut_value = local_search(adj_matrix, adj_list, A, n, value)
+    return (cut_value, cut)
+end  
