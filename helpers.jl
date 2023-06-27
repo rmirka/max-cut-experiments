@@ -63,7 +63,7 @@ subset `A`
 function adj_list_cut_val(adj_matrix, vertex, A, adj_list)
     n = num_vertices(adj_matrix)
     relevant_row = adj_matrix[vertex, :]
-    sum([relevant_row[i] for i ∈ filter(i -> relevant_row[i] != 0 && !(i in A), adj_list[vertex])])
+    return sum([relevant_row[i] for i ∈ filter(i -> relevant_row[i] != 0 && !(i in A), adj_list[vertex])])
 end
 
 
@@ -105,14 +105,45 @@ function nearest_pos_def(matrix)
 end
 
 
-# function new_cut_value(adj_matrix, A, n)
-#     cut_val = 0
-#     for a in A
-#         for i = 1:n
-#             if !(i in A)
-#                 cut_val += adj_matrix[a,i]
-#             end
-#         end
-#     end
-#     return cut_val
-# end
+function local_search(adj_matrix, adj_list, cut, n, cut_value)
+    updates = zeros(n)
+    for i = 1:n
+        relevant_row = adj_matrix[i, :]
+        if i in cut
+            current_cont = sum([relevant_row[j] for j ∈ filter(j -> relevant_row[j] != 0 && !(j in cut), adj_list[i])])
+            updates[i] = (sum(relevant_row) - current_cont) - current_cont -relevant_row[i]
+        else
+            current_cont = sum([relevant_row[j] for j ∈ filter(j -> relevant_row[j] != 0 && (j in cut), adj_list[i])])
+            updates[i] = (sum(relevant_row) - current_cont) - current_cont -relevant_row[i]
+        end
+    end
+    while findmax(updates)[1] > 0
+        flip = argmax(updates)
+        cut_value += updates[flip]
+        updates[flip] = -updates[flip]
+        if flip in cut
+            for j in adj_list[flip]
+                if j != flip
+                    if j in cut
+                        updates[j] = updates[j] - 2*adj_matrix[flip,j]
+                    else
+                        updates[j] = updates[j] + 2*adj_matrix[flip,j]
+                    end
+                end
+            end
+            deleteat!(cut, findall(x -> x==flip, cut))
+        else
+            for j in adj_list[flip]
+                if j != flip
+                    if j in cut
+                        updates[j] = updates[j] + 2*adj_matrix[flip,j]
+                    else
+                        updates[j] = updates[j] - 2*adj_matrix[flip,j]
+                    end
+                end
+            end
+            cut = union(cut,[flip])
+        end
+    end
+    return cut, cut_value
+end
