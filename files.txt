@@ -1,11 +1,8 @@
-files/soc-dolphins.mtx
-files/hamming6-2.mtx
-files/eco-stmarks.mtx
-files2/DD687.mtx
-files2/email-univ.mtx
 files/ENZYMES8.mtx
 files/johnson16-2-4.mtx
+files/hamming6-2.mtx
 files/ia-infect-hyper.mtx
+files/soc-dolphins.mtx
 files/email-enron-only.mtx
 files/dwt_209.mtx
 files/inf-USAir97.mtx
